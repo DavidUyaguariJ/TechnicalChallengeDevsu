@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/AccountMovement/">
+    <Project Path="src/AccountMovement/Devsu.AccountMovement.Api/Devsu.AccountMovement.Api.csproj" />
+    <Project Path="src/AccountMovement/Devsu.AccountMovement.Application/Devsu.AccountMovement.Application.csproj" />
+    <Project Path="src/AccountMovement/Devsu.AccountMovement.Domain/Devsu.AccountMovement.Domain.csproj" />
+    <Project Path="src/AccountMovement/Devsu.AccountMovement.Infrastructure/Devsu.AccountMovement.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/PersonCustomer/">
+    <Project Path="src/PersonCustomer/Devsu.PersonCustomer.Api/Devsu.PersonCustomer.Api.csproj" />
+    <Project Path="src/PersonCustomer/Devsu.PersonCustomer.Application/Devsu.PersonCustomer.Application.csproj" />
+    <Project Path="src/PersonCustomer/Devsu.PersonCustomer.Domain/Devsu.PersonCustomer.Domain.csproj" />
+    <Project Path="src/PersonCustomer/Devsu.PersonCustomer.Infrastructure/Devsu.PersonCustomer.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Shared/">
+    <Project Path="src/Shared/Devsu.Shared.Contracts/Devsu.Shared.Contracts.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/AccountMovement/">
+    <Project Path="tests/AccountMovement/Devsu.AccountMovement.IntegrationTests/Devsu.AccountMovement.IntegrationTests.csproj" />
+    <Project Path="tests/AccountMovement/Devsu.AccountMovement.UnitTests/Devsu.AccountMovement.UnitTests.csproj" />
+  </Folder>
+  <Folder Name="/tests/PersonCustomer/">
+    <Project Path="tests/PersonCustomer/Devsu.PersonCustomer.IntegrationTests/Devsu.PersonCustomer.IntegrationTests.csproj" />
+    <Project Path="tests/PersonCustomer/Devsu.PersonCustomer.UnitTests/Devsu.PersonCustomer.UnitTests.csproj" />
+  </Folder>
+</Solution>

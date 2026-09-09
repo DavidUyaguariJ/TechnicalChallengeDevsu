@@ -1,0 +1,22 @@
+# Build context is the repository root for both Dockerfiles.
+# Keep it small: everything below is either regenerated inside the image or irrelevant.
+
+**/bin/
+**/obj/
+**/out/
+**/.vs/
+**/.vscode/
+**/.idea/
+**/.git/
+**/.gitignore
+**/.dockerignore
+**/Dockerfile*
+**/*.user
+**/*.suo
+**/*.Backup.tmp
+**/TestResults/
+**/node_modules/
+**/*.md
+**/.env
+**/.env.*
+!**/.env.example

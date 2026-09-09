@@ -1,0 +1,6 @@
+@Devsu.AccountMovement.Api_HostAddress = http://localhost:5004
+
+GET {{Devsu.AccountMovement.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
