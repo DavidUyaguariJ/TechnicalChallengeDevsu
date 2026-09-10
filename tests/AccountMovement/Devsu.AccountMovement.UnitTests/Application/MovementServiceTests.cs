@@ -25,23 +25,37 @@ public class MovementServiceTests
         new(new DateTime(2026, 1, 22), "DEPOSIT", 600m, 700m, 1);
 
     [Fact]
-    public async Task CreateAsync_WhenAccountExists_AddsMovementAndReturnsDto()
+    public async Task CreateAsync_WhenAccountHasNoPreviousMovements_ComputesBalanceFromInitialBalance()
     {
         _accountRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(CreateAccount());
-        var request = new CreateMovementRequest(new DateTime(2026, 1, 22), "DEPOSIT", 600m, 700m, 1);
+        _movementRepository.Setup(r => r.GetLastByAccountIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync((Movement?)null);
+        var request = new CreateMovementRequest(new DateTime(2026, 1, 22), "DEPOSIT", 500m, 1);
 
         var result = await _sut.CreateAsync(request);
 
         result.MovementType.Should().Be("DEPOSIT");
-        result.Value.Should().Be(600m);
+        result.Value.Should().Be(500m);
+        result.Balance.Should().Be(2500m);
         _movementRepository.Verify(r => r.AddAsync(It.IsAny<Movement>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenAccountHasPreviousMovements_ComputesBalanceFromLastMovement()
+    {
+        _accountRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(CreateAccount());
+        _movementRepository.Setup(r => r.GetLastByAccountIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(CreateMovement());
+        var request = new CreateMovementRequest(new DateTime(2026, 1, 23), "WITHDRAWAL", -200m, 1);
+
+        var result = await _sut.CreateAsync(request);
+
+        result.Balance.Should().Be(500m);
     }
 
     [Fact]
     public async Task CreateAsync_WhenAccountDoesNotExist_ThrowsNotFoundException()
     {
         _accountRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync((Account?)null);
-        var request = new CreateMovementRequest(new DateTime(2026, 1, 22), "DEPOSIT", 600m, 700m, 1);
+        var request = new CreateMovementRequest(new DateTime(2026, 1, 22), "DEPOSIT", 600m, 1);
 
         var act = () => _sut.CreateAsync(request);
 
