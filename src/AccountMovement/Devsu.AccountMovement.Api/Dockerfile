@@ -42,9 +42,19 @@ RUN dotnet build "src/AccountMovement/Devsu.AccountMovement.Api/Devsu.AccountMov
     -c $BUILD_CONFIGURATION --no-restore -o /app/build
 
 # ---------------------------------------------------------------------------
+# Test
+# ---------------------------------------------------------------------------
+FROM build AS test
+COPY ["tests/AccountMovement/Devsu.AccountMovement.UnitTests/Devsu.AccountMovement.UnitTests.csproj", "tests/AccountMovement/Devsu.AccountMovement.UnitTests/"]
+RUN dotnet restore "tests/AccountMovement/Devsu.AccountMovement.UnitTests/Devsu.AccountMovement.UnitTests.csproj"
+COPY tests/AccountMovement/Devsu.AccountMovement.UnitTests/ tests/AccountMovement/Devsu.AccountMovement.UnitTests/
+RUN dotnet test "tests/AccountMovement/Devsu.AccountMovement.UnitTests/Devsu.AccountMovement.UnitTests.csproj" \
+    -c $BUILD_CONFIGURATION --no-restore
+
+# ---------------------------------------------------------------------------
 # Publish
 # ---------------------------------------------------------------------------
-FROM build AS publish
+FROM test AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "src/AccountMovement/Devsu.AccountMovement.Api/Devsu.AccountMovement.Api.csproj" \
     -c $BUILD_CONFIGURATION --no-restore -o /app/publish /p:UseAppHost=false
