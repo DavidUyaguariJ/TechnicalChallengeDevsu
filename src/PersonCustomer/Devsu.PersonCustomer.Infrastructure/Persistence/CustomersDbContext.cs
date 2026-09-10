@@ -1,55 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using Devsu.PersonCustomer.Infrastructure.Persistence.Entities;
+using Devsu.PersonCustomer.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Devsu.PersonCustomer.Infrastructure.Persistence;
 
-public partial class CustomersDbContext : DbContext
+public class CustomersDbContext : DbContext
 {
-    public CustomersDbContext(DbContextOptions<CustomersDbContext> options)
-        : base(options)
+    public CustomersDbContext(DbContextOptions<CustomersDbContext> options) : base(options)
     {
     }
 
-    public virtual DbSet<Customer> Customers { get; set; }
+    public DbSet<Customer> Customers => Set<Customer>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Customer>(entity =>
+        modelBuilder.Entity<Customer>(builder =>
         {
-            entity.HasKey(e => e.ClientId);
+            builder.ToTable("Customers");
 
-            entity.HasIndex(e => e.Identification, "UQ_Customers_Identification").IsUnique();
+            builder.HasKey(c => c.Id);
+            builder.Property(c => c.Id).HasColumnName("client_id").ValueGeneratedOnAdd();
 
-            entity.Property(e => e.ClientId).HasColumnName("client_id");
-            entity.Property(e => e.Address)
-                .HasMaxLength(200)
-                .HasColumnName("address");
-            entity.Property(e => e.Age).HasColumnName("age");
-            entity.Property(e => e.Gender)
-                .HasMaxLength(20)
-                .HasColumnName("gender");
-            entity.Property(e => e.Identification)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("identification");
-            entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .HasColumnName("name");
-            entity.Property(e => e.Password)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("password");
-            entity.Property(e => e.Phone)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("phone");
-            entity.Property(e => e.Status).HasColumnName("status");
+            builder.Property(c => c.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
+            builder.Property(c => c.Gender).HasColumnName("gender").HasMaxLength(20).IsRequired();
+            builder.Property(c => c.Age).HasColumnName("age").IsRequired();
+            builder.Property(c => c.Identification).HasColumnName("identification").HasMaxLength(20).IsRequired();
+            builder.Property(c => c.Address).HasColumnName("address").HasMaxLength(200).IsRequired();
+            builder.Property(c => c.Phone).HasColumnName("phone").HasMaxLength(20).IsRequired();
+            builder.Property(c => c.Password).HasColumnName("password").HasMaxLength(100).IsRequired();
+            builder.Property(c => c.Status).HasColumnName("status").IsRequired();
+
+            builder.HasIndex(c => c.Identification).IsUnique();
         });
-
-        OnModelCreatingPartial(modelBuilder);
     }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

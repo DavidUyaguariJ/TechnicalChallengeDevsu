@@ -1,69 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using Devsu.AccountMovement.Infrastructure.Persistence.Entities;
+using Devsu.AccountMovement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Devsu.AccountMovement.Infrastructure.Persistence;
 
-public partial class AccountsDbContext : DbContext
+public class AccountsDbContext : DbContext
 {
-    public AccountsDbContext(DbContextOptions<AccountsDbContext> options)
-        : base(options)
+    public AccountsDbContext(DbContextOptions<AccountsDbContext> options) : base(options)
     {
     }
 
-    public virtual DbSet<Account> Accounts { get; set; }
+    public DbSet<Account> Accounts => Set<Account>();
 
-    public virtual DbSet<Movement> Movements { get; set; }
+    public DbSet<Movement> Movements => Set<Movement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>(entity =>
+        modelBuilder.Entity<Account>(builder =>
         {
-            entity.HasIndex(e => e.CustomerId, "IX_Accounts_CustomerId");
+            builder.ToTable("Accounts");
 
-            entity.HasIndex(e => e.AccountNumber, "UQ_Accounts_AccountNumber").IsUnique();
+            builder.HasKey(a => a.Id);
+            builder.Property(a => a.Id).HasColumnName("account_id").ValueGeneratedOnAdd();
 
-            entity.Property(e => e.AccountId).HasColumnName("account_id");
-            entity.Property(e => e.AccountNumber)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("account_number");
-            entity.Property(e => e.AccountType)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("account_type");
-            entity.Property(e => e.CustomerId).HasColumnName("customer_id");
-            entity.Property(e => e.InitialBalance)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("initial_balance");
-            entity.Property(e => e.Status).HasColumnName("status");
+            builder.Property(a => a.AccountNumber).HasColumnName("account_number").HasMaxLength(20).IsRequired();
+            builder.Property(a => a.AccountType).HasColumnName("account_type").HasMaxLength(20).IsRequired();
+            builder.Property(a => a.InitialBalance).HasColumnName("initial_balance").HasColumnType("decimal(15,2)").IsRequired();
+            builder.Property(a => a.Status).HasColumnName("status").IsRequired();
+            builder.Property(a => a.CustomerId).HasColumnName("customer_id").IsRequired();
+
+            builder.HasIndex(a => a.AccountNumber).IsUnique();
+            builder.HasIndex(a => a.CustomerId);
         });
 
-        modelBuilder.Entity<Movement>(entity =>
+        modelBuilder.Entity<Movement>(builder =>
         {
-            entity.Property(e => e.MovementId).HasColumnName("movement_id");
-            entity.Property(e => e.AccountId).HasColumnName("account_id");
-            entity.Property(e => e.Balance)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("balance");
-            entity.Property(e => e.MovementDate).HasColumnName("movement_date");
-            entity.Property(e => e.MovementType)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("movement_type");
-            entity.Property(e => e.Value)
-                .HasColumnType("decimal(15, 2)")
-                .HasColumnName("value");
+            builder.ToTable("Movements");
 
-            entity.HasOne(d => d.Account).WithMany(p => p.Movements)
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Movements_Accounts");
+            builder.HasKey(m => m.Id);
+            builder.Property(m => m.Id).HasColumnName("movement_id").ValueGeneratedOnAdd();
+
+            builder.Property(m => m.MovementDate).HasColumnName("movement_date").IsRequired();
+            builder.Property(m => m.MovementType).HasColumnName("movement_type").HasMaxLength(20).IsRequired();
+            builder.Property(m => m.Value).HasColumnName("value").HasColumnType("decimal(15,2)").IsRequired();
+            builder.Property(m => m.Balance).HasColumnName("balance").HasColumnType("decimal(15,2)").IsRequired();
+            builder.Property(m => m.AccountId).HasColumnName("account_id").IsRequired();
+
+            builder.HasOne<Account>()
+                .WithMany()
+                .HasForeignKey(m => m.AccountId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
-
-        OnModelCreatingPartial(modelBuilder);
     }
-
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
