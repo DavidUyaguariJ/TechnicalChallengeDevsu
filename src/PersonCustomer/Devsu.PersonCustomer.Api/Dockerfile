@@ -40,9 +40,19 @@ RUN dotnet build "src/PersonCustomer/Devsu.PersonCustomer.Api/Devsu.PersonCustom
     -c $BUILD_CONFIGURATION --no-restore -o /app/build
 
 # ---------------------------------------------------------------------------
+# Test
+# ---------------------------------------------------------------------------
+FROM build AS test
+COPY ["tests/PersonCustomer/Devsu.PersonCustomer.UnitTests/Devsu.PersonCustomer.UnitTests.csproj", "tests/PersonCustomer/Devsu.PersonCustomer.UnitTests/"]
+RUN dotnet restore "tests/PersonCustomer/Devsu.PersonCustomer.UnitTests/Devsu.PersonCustomer.UnitTests.csproj"
+COPY tests/PersonCustomer/Devsu.PersonCustomer.UnitTests/ tests/PersonCustomer/Devsu.PersonCustomer.UnitTests/
+RUN dotnet test "tests/PersonCustomer/Devsu.PersonCustomer.UnitTests/Devsu.PersonCustomer.UnitTests.csproj" \
+    -c $BUILD_CONFIGURATION --no-restore
+
+# ---------------------------------------------------------------------------
 # Publish
 # ---------------------------------------------------------------------------
-FROM build AS publish
+FROM test AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "src/PersonCustomer/Devsu.PersonCustomer.Api/Devsu.PersonCustomer.Api.csproj" \
     -c $BUILD_CONFIGURATION --no-restore -o /app/publish /p:UseAppHost=false

@@ -74,3 +74,7 @@ static void LoadDotEnvFile(string path)
         }
     }
 }
+
+public partial class Program
+{
+}
