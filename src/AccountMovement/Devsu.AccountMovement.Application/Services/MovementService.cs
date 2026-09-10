@@ -30,13 +30,14 @@ public class MovementService : IMovementService
 
     public async Task<MovementDto> CreateAsync(CreateMovementRequest request, CancellationToken cancellationToken = default)
     {
-        var accountExists = await _accountRepository.GetByIdAsync(request.AccountId, cancellationToken) is not null;
-        if (!accountExists)
-        {
-            throw new NotFoundException($"Account '{request.AccountId}' was not found.");
-        }
+        var account = await _accountRepository.GetByIdAsync(request.AccountId, cancellationToken)
+            ?? throw new NotFoundException($"Account '{request.AccountId}' was not found.");
 
-        var movement = new Movement(request.MovementDate, request.MovementType, request.Value, request.Balance, request.AccountId);
+        var lastMovement = await _movementRepository.GetLastByAccountIdAsync(request.AccountId, cancellationToken);
+        var currentBalance = lastMovement?.Balance ?? account.InitialBalance;
+        var newBalance = currentBalance + request.Value;
+
+        var movement = new Movement(request.MovementDate, request.MovementType, request.Value, newBalance, request.AccountId);
 
         await _movementRepository.AddAsync(movement, cancellationToken);
 
