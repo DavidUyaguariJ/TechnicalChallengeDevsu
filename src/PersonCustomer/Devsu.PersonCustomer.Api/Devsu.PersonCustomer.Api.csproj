@@ -12,6 +12,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.JsonPatch.SystemTextJson" Version="10.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <!-- Must stay on the 2.x line: Microsoft.AspNetCore.OpenApi 10.0.12 pins [2.12.0, 3.0.0),
          and its source generator targets the 2.x API. 2.12.2 is above 2.7.5, the fix for
          GHSA-v5pm-xwqc-g5wc / CVE-2026-49451 (stack overflow on circular schema references). -->
