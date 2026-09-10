@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Devsu.AccountMovement.Domain\Devsu.AccountMovement.Domain.csproj" />
+    <ProjectReference Include="..\..\Shared\Devsu.Shared.Contracts\Devsu.Shared.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -10,6 +10,8 @@ public interface IAccountRepository
 
     Task<Account?> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Account>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default);
+
     Task AddAsync(Account account, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(Account account, CancellationToken cancellationToken = default);
