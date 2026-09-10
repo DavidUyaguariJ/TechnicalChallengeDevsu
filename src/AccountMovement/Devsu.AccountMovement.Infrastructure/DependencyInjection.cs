@@ -1,4 +1,5 @@
 using Devsu.AccountMovement.Application.Ports;
+using Devsu.AccountMovement.Infrastructure.ExternalServices;
 using Devsu.AccountMovement.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,14 @@ public static class DependencyInjection
 
         services.AddScoped<IAccountRepository, AccountRepository>();
         services.AddScoped<IMovementRepository, MovementRepository>();
+
+        var personCustomerBaseUrl = configuration["Services:PersonCustomer:BaseUrl"]
+            ?? throw new InvalidOperationException("Services:PersonCustomer:BaseUrl configuration is required.");
+
+        services.AddHttpClient<ICustomerServiceClient, CustomerServiceClient>(client =>
+        {
+            client.BaseAddress = new Uri(personCustomerBaseUrl.TrimEnd('/') + "/");
+        });
 
         return services;
     }

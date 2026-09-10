@@ -22,6 +22,9 @@ public class AccountRepository : IAccountRepository
     public async Task<Account?> GetByAccountNumberAsync(string accountNumber, CancellationToken cancellationToken = default) =>
         await _dbContext.Accounts.FirstOrDefaultAsync(a => a.AccountNumber == accountNumber, cancellationToken);
 
+    public async Task<IReadOnlyList<Account>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default) =>
+        await _dbContext.Accounts.AsNoTracking().Where(a => a.CustomerId == customerId).ToListAsync(cancellationToken);
+
     public async Task AddAsync(Account account, CancellationToken cancellationToken = default)
     {
         await _dbContext.Accounts.AddAsync(account, cancellationToken);

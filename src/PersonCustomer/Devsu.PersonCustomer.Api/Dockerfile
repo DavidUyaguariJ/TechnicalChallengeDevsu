@@ -2,7 +2,7 @@
 #
 # Devsu.PersonCustomer.Api
 # Build context MUST be the repository root, because this API references
-# projects that live outside its own folder (Domain/Application/Infrastructure/Shared).
+# projects that live outside its own folder (Domain/Application/Infrastructure).
 #
 #   docker build -f src/PersonCustomer/Devsu.PersonCustomer.Api/Dockerfile -t devsu/person-customer-api .
 
@@ -25,7 +25,6 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Project files first so the restore layer stays cached while only sources change.
-COPY ["src/Shared/Devsu.Shared.Contracts/Devsu.Shared.Contracts.csproj", "src/Shared/Devsu.Shared.Contracts/"]
 COPY ["src/PersonCustomer/Devsu.PersonCustomer.Domain/Devsu.PersonCustomer.Domain.csproj", "src/PersonCustomer/Devsu.PersonCustomer.Domain/"]
 COPY ["src/PersonCustomer/Devsu.PersonCustomer.Application/Devsu.PersonCustomer.Application.csproj", "src/PersonCustomer/Devsu.PersonCustomer.Application/"]
 COPY ["src/PersonCustomer/Devsu.PersonCustomer.Infrastructure/Devsu.PersonCustomer.Infrastructure.csproj", "src/PersonCustomer/Devsu.PersonCustomer.Infrastructure/"]
@@ -35,7 +34,6 @@ RUN dotnet restore "src/PersonCustomer/Devsu.PersonCustomer.Api/Devsu.PersonCust
 
 # Only the sources this microservice needs, so a change in AccountMovement
 # does not invalidate this image's cache.
-COPY src/Shared/ src/Shared/
 COPY src/PersonCustomer/ src/PersonCustomer/
 
 RUN dotnet build "src/PersonCustomer/Devsu.PersonCustomer.Api/Devsu.PersonCustomer.Api.csproj" \

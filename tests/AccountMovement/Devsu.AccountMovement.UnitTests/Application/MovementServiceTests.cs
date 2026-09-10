@@ -52,6 +52,20 @@ public class MovementServiceTests
     }
 
     [Fact]
+    public async Task CreateAsync_WhenValueExceedsAvailableBalance_ThrowsInsufficientBalanceException()
+    {
+        _accountRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(CreateAccount());
+        _movementRepository.Setup(r => r.GetLastByAccountIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync((Movement?)null);
+        var request = new CreateMovementRequest(new DateTime(2026, 1, 22), "WITHDRAWAL", -2500m, 1);
+
+        var act = () => _sut.CreateAsync(request);
+
+        var exception = await act.Should().ThrowAsync<InsufficientBalanceException>();
+        exception.Which.Message.Should().Be("Saldo no disponible");
+        _movementRepository.Verify(r => r.AddAsync(It.IsAny<Movement>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task CreateAsync_WhenAccountDoesNotExist_ThrowsNotFoundException()
     {
         _accountRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync((Account?)null);

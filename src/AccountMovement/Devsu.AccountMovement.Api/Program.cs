@@ -16,6 +16,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddAccountMovementInfrastructure(builder.Configuration);
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IMovementService, MovementService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
