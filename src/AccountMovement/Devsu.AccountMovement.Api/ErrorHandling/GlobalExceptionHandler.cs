@@ -13,6 +13,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             NotFoundException => (StatusCodes.Status404NotFound, "Resource not found"),
             ConflictException => (StatusCodes.Status409Conflict, "Conflict"),
+            InsufficientBalanceException => (StatusCodes.Status422UnprocessableEntity, "Insufficient balance"),
             DomainException => (StatusCodes.Status400BadRequest, "Invalid request"),
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred"),
         };

@@ -37,6 +37,11 @@ public class MovementService : IMovementService
         var currentBalance = lastMovement?.Balance ?? account.InitialBalance;
         var newBalance = currentBalance + request.Value;
 
+        if (newBalance < 0)
+        {
+            throw new InsufficientBalanceException("Saldo no disponible");
+        }
+
         var movement = new Movement(request.MovementDate, request.MovementType, request.Value, newBalance, request.AccountId);
 
         await _movementRepository.AddAsync(movement, cancellationToken);

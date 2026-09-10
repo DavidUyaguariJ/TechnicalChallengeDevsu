@@ -8,10 +8,12 @@ namespace Devsu.AccountMovement.Application.Services;
 public class AccountService : IAccountService
 {
     private readonly IAccountRepository _accountRepository;
+    private readonly ICustomerServiceClient _customerServiceClient;
 
-    public AccountService(IAccountRepository accountRepository)
+    public AccountService(IAccountRepository accountRepository, ICustomerServiceClient customerServiceClient)
     {
         _accountRepository = accountRepository;
+        _customerServiceClient = customerServiceClient;
     }
 
     public async Task<IReadOnlyList<AccountDto>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -28,6 +30,9 @@ public class AccountService : IAccountService
 
     public async Task<AccountDto> CreateAsync(CreateAccountRequest request, CancellationToken cancellationToken = default)
     {
+        _ = await _customerServiceClient.GetByIdAsync(request.CustomerId, cancellationToken)
+            ?? throw new NotFoundException($"Customer '{request.CustomerId}' was not found.");
+
         var existingAccount = await _accountRepository.GetByAccountNumberAsync(request.AccountNumber, cancellationToken);
         if (existingAccount is not null)
         {

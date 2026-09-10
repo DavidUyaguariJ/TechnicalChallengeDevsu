@@ -26,6 +26,17 @@ public class MovementRepository : IMovementRepository
             .OrderByDescending(m => m.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<Movement>> GetByAccountIdsAndDateRangeAsync(
+        IReadOnlyList<long> accountIds,
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default) =>
+        await _dbContext.Movements
+            .AsNoTracking()
+            .Where(m => accountIds.Contains(m.AccountId) && m.MovementDate >= startDate && m.MovementDate <= endDate)
+            .OrderBy(m => m.MovementDate)
+            .ToListAsync(cancellationToken);
+
     public async Task AddAsync(Movement movement, CancellationToken cancellationToken = default)
     {
         await _dbContext.Movements.AddAsync(movement, cancellationToken);

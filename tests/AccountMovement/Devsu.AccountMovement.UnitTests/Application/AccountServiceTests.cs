@@ -3,6 +3,7 @@ using Devsu.AccountMovement.Application.Exceptions;
 using Devsu.AccountMovement.Application.Ports;
 using Devsu.AccountMovement.Application.Services;
 using Devsu.AccountMovement.Domain.Entities;
+using Devsu.Shared.Contracts;
 using FluentAssertions;
 using Moq;
 
@@ -11,11 +12,14 @@ namespace Devsu.AccountMovement.UnitTests.Application;
 public class AccountServiceTests
 {
     private readonly Mock<IAccountRepository> _repository = new();
+    private readonly Mock<ICustomerServiceClient> _customerServiceClient = new();
     private readonly AccountService _sut;
 
     public AccountServiceTests()
     {
-        _sut = new AccountService(_repository.Object);
+        _sut = new AccountService(_repository.Object, _customerServiceClient.Object);
+        _customerServiceClient.Setup(c => c.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CustomerSummary(1, "Jose Lema", true));
     }
 
     private static Account CreateAccount() => new("478758", "Savings", 2000m, 1);
@@ -44,6 +48,19 @@ public class AccountServiceTests
         var act = () => _sut.CreateAsync(request);
 
         await act.Should().ThrowAsync<ConflictException>();
+        _repository.Verify(r => r.AddAsync(It.IsAny<Account>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task CreateAsync_WhenCustomerDoesNotExist_ThrowsNotFoundException()
+    {
+        var request = new CreateAccountRequest("478758", "Savings", 2000m, 99);
+        _customerServiceClient.Setup(c => c.GetByIdAsync(99, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((CustomerSummary?)null);
+
+        var act = () => _sut.CreateAsync(request);
+
+        await act.Should().ThrowAsync<NotFoundException>();
         _repository.Verify(r => r.AddAsync(It.IsAny<Account>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
