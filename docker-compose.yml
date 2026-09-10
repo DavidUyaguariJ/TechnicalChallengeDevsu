@@ -5,7 +5,7 @@ services:
     env_file:
       - src/PersonCustomer/Devsu.PersonCustomer.Api/.env
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: "8080"
     ports:
       - "5046:8080"
@@ -16,7 +16,7 @@ services:
     env_file:
       - src/AccountMovement/Devsu.AccountMovement.Api/.env
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: "8080"
       Services__PersonCustomer__BaseUrl: http://devsu-customer:8080
     ports:
