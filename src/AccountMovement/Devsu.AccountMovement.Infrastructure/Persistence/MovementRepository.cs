@@ -19,6 +19,13 @@ public class MovementRepository : IMovementRepository
     public async Task<Movement?> GetByIdAsync(long id, CancellationToken cancellationToken = default) =>
         await _dbContext.Movements.FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
 
+    public async Task<Movement?> GetLastByAccountIdAsync(long accountId, CancellationToken cancellationToken = default) =>
+        await _dbContext.Movements
+            .AsNoTracking()
+            .Where(m => m.AccountId == accountId)
+            .OrderByDescending(m => m.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
     public async Task AddAsync(Movement movement, CancellationToken cancellationToken = default)
     {
         await _dbContext.Movements.AddAsync(movement, cancellationToken);
